@@ -46,6 +46,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -96,6 +97,9 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
     String filePath;
     FileUtils fileUtils;
     Bitmap bitmap;
+
+    List<File> filesList=new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -523,11 +527,22 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
     }
 
     private void callApiForm3() {
+
+        File[] files = new File[filesList.size()];
+        for (int i = 0; i < filesList.size(); i++) {
+            files[i] = filesList.get(i);
+            Log.d("see files", files[i].toString());
+
+        }
             RequestParams jsonParams = new RequestParams();
             jsonParams.put("_token", token);
             jsonParams.put("kams_visit_id", lastVisitInsertedID);
-            jsonParams.put("document", filePath);
-            Log.e("JSONPARAMS3", jsonParams.toString());
+        try {
+            jsonParams.put("document[]", files);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        Log.e("JSONPARAMS3", jsonParams.toString());
             //Log.e("SD",lastVisitInsertedID);
 
         //jsonParams.setForceMultipartEntityContentType(true);
@@ -616,7 +631,7 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case GALLERY_REQUEST:
-                    if (data.getData() != null){
+                    /*if (data.getData() != null){
                         uri = data.getData();
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
@@ -633,7 +648,49 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    }*/
+                    if (data.getClipData() != null) {
+
+                        int count = data.getClipData().getItemCount();
+                        for (int i = 0; i < count; i++) {
+                            String imgPath = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                                imgPath = fileUtils.getPath(FormsActivity.this, data.getClipData().getItemAt(i).getUri());
+                            }
+                            Log.d("multi","here"+imgPath);
+
+
+                            filesList.add(new File(imgPath));
+                            upload_img.setText("Image Picked!");
+
+
+                        }
+
                     }
+                    else if (data.getData() != null) {
+                        Uri imagePath = data.getData();
+                        Log.d("single","here"+imagePath);
+
+
+                        try {
+                            String imgPath = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                                imgPath = fileUtils.getPath(FormsActivity.this, imagePath);
+                            }
+                            Log.e("FILES",imgPath);
+                            filesList.add(new File(imgPath));
+                            Log.d("size of",filesList.size()+"");
+
+
+
+
+
+                        } catch (Exception e) {
+                            Log.i("TAG", "Some exception " + e);
+                        }
+
+                    }
+
 
              /*       if (data.getData() != null) {
                         //int count = data.getClipData().getItemCount();

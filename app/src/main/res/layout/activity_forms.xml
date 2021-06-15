@@ -70,10 +70,11 @@
             android:layout_margin="15dp">
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/form1"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:paddingVertical="5dp"
                 android:orientation="vertical">
 
@@ -510,10 +511,11 @@
             </LinearLayout>
 
             <LinearLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/form3"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:paddingVertical="5dp"
                 android:orientation="vertical">
 
