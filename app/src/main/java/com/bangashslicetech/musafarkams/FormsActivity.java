@@ -61,6 +61,8 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
             input_owner_contact, input_owner_email, input_pocname, input_poccontact, input_remarks,
             input_last_mon_sale_report;
 
+    //sds
+
     private String typeSelection, subTypeSelection;
 
     private Button btn_submit;
