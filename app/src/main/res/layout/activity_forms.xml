@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".FormsActivity">
+
+    <LinearLayout
+        android:id="@+id/toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="vertical"
+        android:background="@drawable/toolbar_shape"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dashboard"
+            android:textSize="20sp"
+            android:fontFamily="@font/ceragr_medium"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fill the required data below !"
+        android:fontFamily="@font/ceragr_medium"
+        android:textSize="16sp"
+        android:textColor="@color/colorprimary"
+        android:textStyle="bold"
+        android:id="@+id/txt"
+        android:layout_marginVertical="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/toolbar_layout"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt"
+        android:layout_centerInParent="true">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="20dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="3dp"
+        app:cardBackgroundColor="@android:color/white"
+        android:background="@drawable/card_shape"
+        android:layout_marginHorizontal="10dp"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:id="@+id/mainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form1"
+                android:visibility="visible"
+                android:paddingVertical="5dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Type"
+                        android:background="@null"
+                        android:textColor="@android:color/black"
+                        android:id="@+id/type"
+                        android:dropDownHeight="155dp"
+                        android:cursorVisible="false"
+                        android:maxLines="1"
+                        android:focusable="false"
+                        android:textColorHint="@color/colorprimary"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:padding="10dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Sub type"
+                        android:background="@null"
+                        android:id="@+id/subType"
+                        android:dropDownHeight="155dp"
+                        android:cursorVisible="false"
+                        android:maxLines="1"
+                        android:textColor="@android:color/black"
+                        android:focusable="false"
+                        android:textColorHint="@color/colorprimary"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:padding="10dp" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_visit_date"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:clickable="true"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Pick your visit date"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_organization_name"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Organization name"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_address"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Address"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_contact"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Contact no"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_owner_name"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Owner name"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_owner_contact"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Owner contact"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_owner_email"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="textEmailAddress"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Owner email"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_pocname"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="POC name"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_poccontact"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="POC contact"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_remarks"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Remarks"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_last_mon_sale_report"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Last month sale report"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bottomLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="15dp">
+
+                    <Button
+                        android:id="@+id/btn_submit"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_btn_shape"
+                        android:text="SUBMIT"
+                        android:textColor="#fff"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/ceragr_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form2"
+                android:visibility="gone"
+                android:paddingVertical="5dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_airlineName"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Airline name"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_percentage"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="numberDecimal"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Percentage"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_supplierName"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:inputType="text"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Supplier name"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="15dp">
+
+                    <Button
+                        android:id="@+id/btn_submit_two"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_btn_shape"
+                        android:text="SUBMIT"
+                        android:textColor="#fff"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/ceragr_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/form3"
+                android:visibility="gone"
+                android:paddingVertical="5dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/upload_img"
+                        android:layout_weight="1"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:clickable="true"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:drawableRight="@drawable/ic_baseline_attach_file_24"
+                        android:paddingRight="5dp"
+                        android:textColorHint="@color/colorprimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Attach image (if any)"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="15dp">
+
+                    <Button
+                        android:id="@+id/btn_submit_three"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_btn_shape"
+                        android:text="SUBMIT"
+                        android:textColor="#fff"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/ceragr_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

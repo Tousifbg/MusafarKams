@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MusafarKams</string>
+
+    <string-array name="Type_values">
+        <item>Agent</item>
+        <item>Supplier</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="SubType_values">
+        <item>Flight</item>
+        <item>Hotel</item>
+        <item>Rent a car</item>
+        <item>Tour</item>
+    </string-array>
+</resources>
