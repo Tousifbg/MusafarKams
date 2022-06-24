@@ -30,14 +30,15 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="10dp"
+        android:background="@drawable/card_shape"
         android:elevation="4dp"
+        app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="8dp"
         app:cardElevation="3dp"
-        app:cardBackgroundColor="@android:color/white"
-        android:layout_centerInParent="true"
-        android:background="@drawable/card_shape"
-        android:layout_marginHorizontal="10dp"
-        app:cardUseCompatPadding="true">
+        app:cardUseCompatPadding="true"
+        tools:targetApi="lollipop">
 
         <RelativeLayout
             android:id="@+id/mainLayout"
@@ -46,43 +47,43 @@
             android:layout_margin="15dp">
 
             <LinearLayout
+                android:id="@+id/secondLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/secondLinear"
-                android:paddingVertical="5dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingVertical="5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:layout_marginBottom="12dp"
                     android:background="@drawable/edittext_shape"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
+                    android:gravity="center_vertical">
 
 
                     <ImageView
+                        android:id="@+id/imageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView"
                         android:layout_marginHorizontal="8dp"
                         android:background="@drawable/username" />
 
                     <View
                         android:layout_width="1dip"
                         android:layout_height="50dp"
-                        android:background="@color/colorprimary" />
+                        android:background="@color/colorPrimary" />
 
                     <EditText
+                        android:id="@+id/input_uname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/input_uname"
+                        android:layout_marginLeft="8dp"
                         android:layout_weight="1"
                         android:background="@null"
+                        android:hint="Username"
                         android:inputType="text"
                         android:textColor="@android:color/black"
-                        android:textColorHint="@color/colorprimary"
-                        android:layout_marginLeft="8dp"
-                        android:hint="Username"/>
+                        android:textColorHint="@color/colorPrimary" />
 
 
                 </LinearLayout>
@@ -90,34 +91,34 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:layout_marginBottom="12dp"
                     android:background="@drawable/edittext_shape"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
+                    android:gravity="center_vertical">
 
 
                     <ImageView
+                        android:id="@+id/imageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView2"
                         android:layout_marginHorizontal="8dp"
                         android:background="@drawable/password" />
 
                     <View
                         android:layout_width="1dip"
                         android:layout_height="50dp"
-                        android:background="@color/colorprimary" />
+                        android:background="@color/colorPrimary" />
 
                     <EditText
+                        android:id="@+id/input_pass"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/input_pass"
-                        android:layout_weight="1"
-                        android:textColor="@android:color/black"
-                        android:background="@null"
-                        android:inputType="textPassword"
-                        android:textColorHint="@color/colorprimary"
                         android:layout_marginLeft="8dp"
-                        android:hint="Password"/>
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/colorPrimary" />
 
 
                 </LinearLayout>
@@ -127,18 +128,18 @@
                     android:id="@+id/bottomLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:layout_marginTop="15dp">
+                    android:weightSum="2">
 
                     <TextView
+                        android:id="@+id/forgot_pass"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:id="@+id/forgot_pass"
                         android:layout_weight="1"
-                        android:textColor="@color/colorprimary"
                         android:fontFamily="@font/ceragr_medium"
-                        android:text="Forgot Password?"/>
+                        android:text="Forgot Password?"
+                        android:textColor="@color/colorPrimary" />
 
                     <Button
                         android:id="@+id/btn_login"
@@ -146,26 +147,26 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/login_btn_shape"
+                        android:fontFamily="@font/ceragr_medium"
                         android:text="LOGIN"
                         android:textColor="#fff"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/ceragr_medium" />
+                        android:textSize="14sp" />
 
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/create_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/create_account"
-                    android:fontFamily="@font/ceragr_medium"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    android:textColor="@color/colorprimary"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="24dp"
                     android:layout_marginBottom="10dp"
-                    android:text="SIGN UP"/>
+                    android:fontFamily="@font/ceragr_medium"
+                    android:text="SIGN UP"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.MusafarKams" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorprimary</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorprimary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -14,11 +14,13 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="my_dialog_theme" parent="ThemeOverlay.AppCompat.Dialog">
-        <item name="colorAccent">#9E9E9E</item>                   <!--header background-->
-        <item name="android:windowBackground">#9E9E9E</item>     <!--calendar background-->
-        <item name="android:colorControlActivated">#d50000</item> <!--selected day-->
+    <style name="my_dialog_theme" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="colorAccent">#455A64</item>                   <!--header background-->
+        <item name="android:windowBackground">#37474F</item>     <!--calendar background-->
+        <item name="android:colorControlActivated" tools:targetApi="lollipop">#d50000</item> <!--selected day-->
         <item name="android:textColorPrimary">#d50000</item> <!--days of the month-->
-        <item name="android:textColorSecondary">#d50000</item>    <!--days of the week-->
+        <item name="android:textColorSecondary">#d50000</item>
+        <item name="android:textColor">#d50000</item>
+        <item name="android:background">#78909C</item><!--days of the week-->
     </style>
 </resources>

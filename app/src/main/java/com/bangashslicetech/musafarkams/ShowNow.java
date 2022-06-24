@@ -2,7 +2,6 @@ package com.bangashslicetech.musafarkams;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.widget.Toast;
 
 import com.kaopiz.kprogresshud.KProgressHUD;
@@ -19,25 +18,25 @@ public class ShowNow {
         this.context = context;
         minimalKSnack=new MinimalKSnack((Activity) context);
     }
-    public void desplayErrorToast(Context context, String message){
+    public void displayErrorToast(String message){
         minimalKSnack
-                .setMessage(message) // message
-                .setStyle(MinimalKSnackStyle.STYLE_ERROR) // style
-                .setBackgroundColor(R.color.error_color) // background color
-                .setAnimation(Fade.In.getAnimation(), Fade.Out.getAnimation()) // show and hide animations
-                .setDuration(4000) // you can use for auto close.
-                .alignBottom() // bottom align option.
+                .setMessage(message)
+                .setStyle(MinimalKSnackStyle.STYLE_ERROR)
+                .setBackgroundColor(R.color.error_color)
+                .setAnimation(Fade.In.getAnimation(), Fade.Out.getAnimation())
+                .setDuration(4000)
+                .alignBottom()
                 .show();
 
     }
-    public void desplayPositiveToast(Context context, String message){
+    public void displayPositiveToast(String message){
         minimalKSnack
-                .setMessage(message) // message
-                .setStyle(MinimalKSnackStyle.STYLE_ERROR) // style
-                .setBackgroundColor(R.color.green) // background color
-                .setAnimation(Fade.In.getAnimation(), Fade.Out.getAnimation()) // show and hide animations
-                .setDuration(4000) // you can use for auto close.
-                .alignBottom() // bottom align option.
+                .setMessage(message)
+                .setStyle(MinimalKSnackStyle.STYLE_ERROR)
+                .setBackgroundColor(R.color.green)
+                .setAnimation(Fade.In.getAnimation(), Fade.Out.getAnimation())
+                .setDuration(4000)
+                .alignBottom()
                 .show();
 
     }
@@ -46,17 +45,9 @@ public class ShowNow {
         hud = KProgressHUD.create(context)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setLabel("Please wait")
-                .setCancellable(new DialogInterface.OnCancelListener()
-                {
-                    @Override
-                    public void onCancel(DialogInterface
-                                                           dialogInterface)
-                    {
-                        Toast.makeText(context, "You " +
-                                "cancelled manually!", Toast
-                                .LENGTH_SHORT).show();
-                    }
-                });
+                .setCancellable(dialogInterface -> Toast.makeText(context, "You " +
+                        "cancelled manually!", Toast
+                        .LENGTH_SHORT).show());
 
         hud.show();
 

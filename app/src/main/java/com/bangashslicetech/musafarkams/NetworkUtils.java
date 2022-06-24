@@ -6,9 +6,8 @@ import android.net.NetworkInfo;
 
 public class NetworkUtils {
 
-    private static int TYPE_WIFI = 1;
-    private static int TYPE_MOBILE = 2;
-    private static int TYPE_NOT_CONNECTED = 0;
+    private static final int TYPE_WIFI = 1;
+    private static final int TYPE_MOBILE = 2;
 
     public static int getConnectivityStatus(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context
@@ -27,15 +26,11 @@ public class NetworkUtils {
                 return TYPE_MOBILE;
             }
         }
-        return TYPE_NOT_CONNECTED;
+        return 0;
     }
 
     public static boolean isNetworkConnected(Context context) {
         int networkStatus = getConnectivityStatus(context);
-        if (networkStatus == TYPE_WIFI || networkStatus == TYPE_MOBILE) {
-            return true;
-        } else {
-            return false;
-        }
+        return networkStatus == TYPE_WIFI || networkStatus == TYPE_MOBILE;
     }
 }

@@ -8,24 +8,37 @@
     android:background="@android:color/white"
     tools:context=".FormsActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:orientation="vertical"
-        android:background="@drawable/toolbar_shape"
-        android:gravity="center">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/toolbar_shape">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dashboard"
             android:textSize="20sp"
+            android:layout_centerHorizontal="true"
             android:fontFamily="@font/ceragr_medium"
             android:textColor="@android:color/white"
             android:textStyle="bold"/>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/btnlogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textSize="16sp"
+            android:layout_marginRight="15dp"
+            android:layout_alignParentRight="true"
+            android:fontFamily="@font/ceragr_medium"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,7 +46,7 @@
         android:text="Fill the required data below !"
         android:fontFamily="@font/ceragr_medium"
         android:textSize="16sp"
-        android:textColor="@color/colorprimary"
+        android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         android:id="@+id/txt"
         android:layout_marginVertical="15dp"
@@ -70,13 +83,60 @@
             android:layout_margin="15dp">
 
             <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/form1"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:paddingVertical="5dp"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_lat"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:textColorHint="@color/colorPrimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Latitude"/>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edittext_shape"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/input_long"
+                        android:layout_weight="1"
+                        android:textColor="@android:color/black"
+                        android:background="@null"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:textColorHint="@color/colorPrimary"
+                        android:layout_marginLeft="8dp"
+                        android:hint="Longitude"/>
+
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -97,7 +157,7 @@
                         android:cursorVisible="false"
                         android:maxLines="1"
                         android:focusable="false"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:clickable="true"
                         android:inputType="none"
                         android:padding="10dp" />
@@ -124,7 +184,7 @@
                         android:maxLines="1"
                         android:textColor="@android:color/black"
                         android:focusable="false"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:clickable="true"
                         android:inputType="none"
                         android:padding="10dp" />
@@ -151,7 +211,7 @@
                         android:focusable="false"
                         android:inputType="none"
                         android:clickable="true"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Pick your visit date"/>
 
@@ -174,7 +234,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Organization name"/>
 
@@ -197,7 +257,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Address"/>
 
@@ -220,7 +280,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="numberDecimal"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Contact no"/>
 
@@ -243,7 +303,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Owner name"/>
 
@@ -266,7 +326,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="numberDecimal"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Owner contact"/>
 
@@ -289,7 +349,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="textEmailAddress"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Owner email"/>
 
@@ -312,7 +372,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="POC name"/>
 
@@ -335,7 +395,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="numberDecimal"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="POC contact"/>
 
@@ -358,7 +418,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Remarks"/>
 
@@ -381,7 +441,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Last month sale report"/>
 
@@ -398,11 +458,12 @@
 
                     <Button
                         android:id="@+id/btn_submit"
-                        android:layout_width="150dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/login_btn_shape"
-                        android:text="SUBMIT"
+                        android:text="ADD RECORD"
                         android:textColor="#fff"
+                        android:textAllCaps="true"
                         android:gravity="center"
                         android:textSize="14sp"
                         android:fontFamily="@font/ceragr_medium" />
@@ -435,7 +496,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Airline name"/>
 
@@ -458,7 +519,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="numberDecimal"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Percentage"/>
 
@@ -481,7 +542,7 @@
                         android:textColor="@android:color/black"
                         android:background="@null"
                         android:inputType="text"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Supplier name"/>
 
@@ -493,16 +554,33 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center"
+                    android:weightSum="2"
                     android:layout_marginTop="15dp">
 
                     <Button
                         android:id="@+id/btn_submit_two"
-                        android:layout_width="150dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/login_btn_shape"
-                        android:text="SUBMIT"
+                        android:text="ADD RECORD"
                         android:textColor="#fff"
-                        android:gravity="center"
+                        android:textAllCaps="true"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:layout_marginHorizontal="10dp"
+                        android:fontFamily="@font/ceragr_medium" />
+
+                    <Button
+                        android:id="@+id/btn_next_Screen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_btn_shape"
+                        android:text="Next Step"
+                        android:textColor="#fff"
+                        android:enabled="false"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="10dp"
+                        android:textAllCaps="true"
                         android:textSize="14sp"
                         android:fontFamily="@font/ceragr_medium" />
 
@@ -511,11 +589,10 @@
             </LinearLayout>
 
             <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/form3"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:paddingVertical="5dp"
                 android:orientation="vertical">
 
@@ -540,7 +617,7 @@
                         android:background="@null"
                         android:drawableRight="@drawable/ic_baseline_attach_file_24"
                         android:paddingRight="5dp"
-                        android:textColorHint="@color/colorprimary"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginLeft="8dp"
                         android:hint="Attach image (if any)"/>
 
@@ -553,16 +630,28 @@
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:layout_marginTop="15dp">
-
+                    <Button
+                        android:id="@+id/btn_previous_three"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/login_btn_shape"
+                        android:text="back"
+                        android:layout_marginRight="15dp"
+                        android:textColor="#fff"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textAllCaps="true"
+                        android:fontFamily="@font/ceragr_medium" />
                     <Button
                         android:id="@+id/btn_submit_three"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/login_btn_shape"
-                        android:text="SUBMIT"
+                        android:text="Add Record"
                         android:textColor="#fff"
                         android:gravity="center"
                         android:textSize="14sp"
+                        android:textAllCaps="true"
                         android:fontFamily="@font/ceragr_medium" />
 
                 </LinearLayout>

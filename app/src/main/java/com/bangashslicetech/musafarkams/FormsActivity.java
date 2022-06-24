@@ -1,20 +1,14 @@
 package com.bangashslicetech.musafarkams;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,21 +16,33 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -44,27 +50,28 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import cz.msebera.android.httpclient.Header;
 
-public class FormsActivity extends AppCompatActivity implements LocationListener{
+public class FormsActivity extends AppCompatActivity implements LocationListener {
 
     private AutoCompleteTextView type, subType;
     private EditText input_visit_date, input_organization_name, input_address, input_contact, input_owner_name,
-            input_owner_contact, input_owner_email, input_pocname, input_poccontact, input_remarks,
+            input_owner_contact, input_owner_email, input_poc_name, input_poc_contact, input_remarks,
             input_last_mon_sale_report;
 
-    //sds
+    private static final long LOCATION_UPDATE_INTERVAL = 101;
+    private static final long LOCATION_UPDATE_FASTEST_INTERVAL = 102;
+    private static final int REQUEST_CODE_CHECK_SETTINGS = 103;
 
-    private String typeSelection, subTypeSelection;
+    private String typeSelection="", subTypeSelection="";
 
     private Button btn_submit;
 
@@ -76,9 +83,6 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
     SharedPreferences pref;
 
     String token, personID;
-
-    private LocationManager locationManager;
-    String provider;
 
     private LinearLayout form1, form2, form3;
 
@@ -93,35 +97,47 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
     public static final int PICK_IMG = -1;
     public static final int GALLERY_REQUEST = 10;
 
-    Uri uri;
-    String filePath;
-    FileUtils fileUtils;
-    Bitmap bitmap;
 
-    List<File> filesList=new ArrayList<>();
+    List<File> filesList = new ArrayList<>();
 
+    LottieAnimationView lottieAnimationView;
+    Button btnOK;
+    TextView headingTxt, msgTxt;
 
+    TextView btnLogout;
+    EditText input_long, input_lat;
+
+    Location location;
+    private LocationManager locationManager;
+    String provider;
+
+    private Button btn_next_Screen;
+    private String uid, name;
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(FormsActivity.this, VisitUser.class));
+        finish();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forms);
-
         initViews();
-
-        statusCheck();
-        grantLocationPermission();
-
+        grantLocPermission();
         locationManager = (LocationManager) getSystemService(
                 Context.LOCATION_SERVICE);
-
-        // Creating an empty criteria object
         Criteria criteria = new Criteria();
 
-        // Getting the name of the provider that meets the criteria
-        provider = locationManager.getBestProvider(criteria, false);
+        pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        uid = pref.getString("user_id", "No Data");
+        name = pref.getString("user_name", "No Data");
 
+        provider = locationManager.getBestProvider(criteria, false);
         if (provider != null && !provider.equals("")) {
-            if (!provider.contains("gps")) { // if gps is disabled
+            if (!provider.contains("gps")) {
                 final Intent poke = new Intent();
                 poke.setClassName("com.android.settings",
                         "com.android.settings.widget.SettingsAppWidgetProvider");
@@ -129,18 +145,13 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
                 poke.setData(Uri.parse("3"));
                 sendBroadcast(poke);
             }
-            // Get the location from the given provider
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
 
@@ -148,183 +159,211 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
                 onLocationChanged(location);
             else
                 location = locationManager.getLastKnownLocation(provider);
-            if (location != null)
-                onLocationChanged(location);
-            else
-
-                Toast.makeText(getBaseContext(), "Location can't be retrieved",
-                        Toast.LENGTH_SHORT).show();
-
-        } else {
-            Toast.makeText(getBaseContext(), "No Provider Found",
-                    Toast.LENGTH_SHORT).show();
         }
-
-        Log.e("LAT", latitude + "LONG" + longitude);
-
-        //SHARED PREFERENCES TO CHECK IF USER ID IS ALREADY SAVED
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 2, this);
         pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         token = pref.getString("token", "No Data");
         personID = pref.getString("user_id", "No Data");
-        Log.e("SHARED_PREF", token);
-
-        hasStoragePermission(1);
-
-        // CUSTOM AUTOCOMPLETE TEXTVIEW FOR GENDER SPINNER
-        //final ImageView delButton = findViewById(R.id.delButton);
         ArrayAdapter<String> arrayAdapternew = new ArrayAdapter<>(
                 this, android.R.layout.simple_list_item_1, getResources()
                 .getStringArray(R.array.Type_values));
         type.setAdapter(arrayAdapternew);
         type.setCursorVisible(false);
-        type.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                type.showDropDown();
-                typeSelection = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(FormsActivity.this, typeSelection,
-                        Toast.LENGTH_SHORT).show();
-            }
+        type.setOnItemClickListener((adapterView, view, i, l) -> {
+            type.showDropDown();
+            typeSelection = (String) adapterView.getItemAtPosition(i);
         });
-        type.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                type.showDropDown();
-            }
-        });
-
-        // CUSTOM AUTOCOMPLETE TEXTVIEW FOR GENDER SPINNER
-        //final ImageView delButton = findViewById(R.id.delButton);
+        type.setOnClickListener(view -> type.showDropDown());
         ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<>(
                 this, android.R.layout.simple_list_item_1, getResources()
                 .getStringArray(R.array.SubType_values));
         subType.setAdapter(arrayAdapter2);
         subType.setCursorVisible(false);
-        subType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                subType.showDropDown();
-                subTypeSelection = (String) adapterView.getItemAtPosition(i);
-                Toast.makeText(FormsActivity.this, subTypeSelection,
-                        Toast.LENGTH_SHORT).show();
-            }
+        subType.setOnItemClickListener((adapterView, view, i, l) -> {
+            subType.showDropDown();
+            subTypeSelection = (String) adapterView.getItemAtPosition(i);
         });
-        subType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                subType.showDropDown();
+        subType.setOnClickListener(view -> subType.showDropDown());
+
+        btn_submit.setOnClickListener(view -> {
+            visit_Date = input_visit_date.getText().toString();
+            organization = input_organization_name.getText().toString();
+            add = input_address.getText().toString();
+            cont_no = input_contact.getText().toString();
+            owner = input_owner_name.getText().toString();
+            owner_cont = input_owner_contact.getText().toString();
+            owner_email = input_owner_email.getText().toString().trim();
+            poc_name = input_poc_name.getText().toString();
+            poc_cont = input_poc_contact.getText().toString();
+            remarks = input_remarks.getText().toString();
+            last_mon_report = input_last_mon_sale_report.getText().toString();
+
+            if (longitude.isEmpty() || latitude.isEmpty()) {
+                String msg = "Location missing. Turn your location ON";
+                showErrorDialog(view, msg);
             }
-        });
-
-        btn_submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                visit_Date = input_visit_date.getText().toString();
-                organization = input_organization_name.getText().toString();
-                add = input_address.getText().toString();
-                cont_no = input_contact.getText().toString();
-                owner = input_owner_name.getText().toString();
-                owner_cont = input_owner_contact.getText().toString();
-                owner_email = input_owner_email.getText().toString();
-                poc_name = input_pocname.getText().toString();
-                poc_cont = input_poccontact.getText().toString();
-                remarks = input_remarks.getText().toString();
-                last_mon_report = input_last_mon_sale_report.getText().toString();
-
-                if (TextUtils.isEmpty(visit_Date)) {
-                    input_visit_date.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(organization)) {
-                    input_organization_name.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(add)) {
-                    input_address.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(cont_no)) {
-                    input_contact.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(owner)) {
-                    input_owner_name.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(owner_cont)) {
-                    input_owner_contact.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(owner_email)) {
-                    input_owner_email.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(poc_name)) {
-                    input_pocname.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(poc_cont)) {
-                    input_poccontact.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(remarks)) {
-                    input_remarks.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(last_mon_report)) {
-                    input_last_mon_sale_report.setError("This field can't be empty");
+            else if(typeSelection.isEmpty()){
+                String msg = "You haven't selected Type";
+                showErrorDialog(view, msg);
+            }
+            else if(subTypeSelection.isEmpty()){
+                String msg = "You haven't selected subType";
+                showErrorDialog(view, msg);
+            }
+            else if (TextUtils.isEmpty(visit_Date)) {
+                String msg = "You haven't selected date";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(organization)) {
+                String msg = "Please enter organization name";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(add)) {
+                String msg = "Please enter address";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(cont_no)||(cont_no.toCharArray().length<11)) {
+                String msg = "Please enter valid contact number";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(owner)) {
+                String msg = "Please enter owner name";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(owner_cont)||(owner_cont.toCharArray().length<11)) {
+                String msg = "Please enter valid owner contact number";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(owner_email)) {
+                String msg = "Owner email may not left empty";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(poc_name)) {
+                String msg = "Please enter POC name";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(poc_cont)||(poc_cont.toCharArray().length<11)) {
+                String msg = "Please enter valid POC contact number";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(remarks)) {
+                String msg = "Please enter remarks";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(last_mon_report)) {
+                String msg = "Please enter last month sale report";
+                showErrorDialog(view, msg);
+            } else {
+                if (NetworkUtils.isNetworkConnected(FormsActivity.this)) {
+                    callApi();
                 } else {
-                    if (NetworkUtils.isNetworkConnected(FormsActivity.this)) {
-                        callApi();
-                    } else {
-                        Toast.makeText(FormsActivity.this, "Check your internet", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(FormsActivity.this, "Check your internet", Toast.LENGTH_SHORT).show();
                 }
-
             }
+
         });
 
-        input_visit_date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //To show current date in the datepicker
-                Calendar mcurrentDate = Calendar.getInstance();
-                int mYear = mcurrentDate.get(Calendar.YEAR);
-                int mMonth = mcurrentDate.get(Calendar.MONTH);
-                int mDay = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+        input_visit_date.setOnClickListener(view -> {
+            Calendar mCurrentDate = Calendar.getInstance();
+            int mYear = mCurrentDate.get(Calendar.YEAR);
+            int mMonth = mCurrentDate.get(Calendar.MONTH);
+            int mDay = mCurrentDate.get(Calendar.DAY_OF_MONTH);
 
-                DatePickerDialog mDatePicker;
-                mDatePicker = new DatePickerDialog(FormsActivity.this,R.style.my_dialog_theme,
-                        new DatePickerDialog.OnDateSetListener() {
-                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
-                        // TODO Auto-generated method stub
-                        /*      Your code   to get date and time    */
+            DatePickerDialog mDatePicker;
+            mDatePicker = new DatePickerDialog(FormsActivity.this, R.style.my_dialog_theme,
+                    (datePicker, selectedYear, selectedmonth, selectedDay) -> {
                         selectedmonth = selectedmonth + 1;
-                        input_visit_date.setText("" + selectedday + "/" + selectedmonth + "/" + selectedyear);
-                    }
-                }, mYear, mMonth, mDay);
-                mDatePicker.setTitle("Select Date");
-                mDatePicker.show();
-            }
+                        input_visit_date.setText("" + selectedDay + "/" + selectedmonth + "/" + selectedYear);
+                    }, mYear, mMonth, mDay);
+            mDatePicker.setTitle("Select Date");
+            mDatePicker.show();
         });
 
-        btn_submit_two.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                airlineName = input_airlineName.getText().toString();
-                percentage = input_percentage.getText().toString();
-                supplierName = input_supplierName.getText().toString();
+        btn_submit_two.setOnClickListener(view -> {
+            airlineName = input_airlineName.getText().toString();
+            percentage = input_percentage.getText().toString();
+            supplierName = input_supplierName.getText().toString();
 
-                if (TextUtils.isEmpty(airlineName)) {
-                    input_airlineName.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(percentage)) {
-                    input_percentage.setError("This field can't be empty");
-                } else if (TextUtils.isEmpty(supplierName)) {
-                    input_supplierName.setError("This field can't be empty");
+            if (TextUtils.isEmpty(airlineName)) {
+                String msg = "You must enter airline name";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(percentage)) {
+                String msg = "You must enter percentage";
+                showErrorDialog(view, msg);
+            } else if (TextUtils.isEmpty(supplierName)) {
+                String msg = "You must enter supplier name";
+                showErrorDialog(view, msg);
+            } else {
+                if (NetworkUtils.isNetworkConnected(FormsActivity.this)) {
+                    callApiForm2();
                 } else {
-                    if (NetworkUtils.isNetworkConnected(FormsActivity.this)) {
-                        callApiForm2();
-                    } else {
-                        Toast.makeText(FormsActivity.this, "Check your internet", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(FormsActivity.this, "Check your internet", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        upload_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pickImage();
-            }
-        });
+        upload_img.setOnClickListener(view -> pickImage());
 
-        getBtn_submit_three.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callApiForm3();
-            }
-        });
+        getBtn_submit_three.setOnClickListener(view -> callApiForm3());
 
+        btnLogout.setOnClickListener(view -> {
+            showNow.displayPositiveToast("You have logout");
+            SharedPreferences.Editor editor = pref.edit();
+            editor.clear();
+            editor.apply();
+            startActivity(new Intent(FormsActivity.this, MainActivity.class));
+            finish();
+        });
+        Button btn_previous = findViewById(R.id.btn_previous_three);
+        btn_previous.setOnClickListener(view->{
+            form1.setVisibility(View.GONE);
+            form3.setVisibility(View.GONE);
+            form2.setVisibility(View.VISIBLE);
+        });
+        btn_next_Screen.setOnClickListener(view -> {
+            form2.setVisibility(View.GONE);
+            form3.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void grantLocPermission() {
+        LocationRequest locationRequest = LocationRequest.create()
+                .setInterval(LOCATION_UPDATE_INTERVAL)
+                .setFastestInterval(LOCATION_UPDATE_FASTEST_INTERVAL)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        LocationServices
+                .getSettingsClient(this)
+                .checkLocationSettings(builder.build())
+                .addOnSuccessListener(this, (LocationSettingsResponse response) -> {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
+                })
+                .addOnFailureListener(this, ex -> {
+                    if (ex instanceof ResolvableApiException) {
+                        try {
+                            ResolvableApiException resolvable = (ResolvableApiException) ex;
+                            resolvable.startResolutionForResult(FormsActivity.this,
+                                    REQUEST_CODE_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException ignored) {
+                        }
+                    }
+                });
+    }
+
+    private void showErrorDialog(View view, String msg) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(FormsActivity.this);
+        ViewGroup viewGroup = findViewById(R.id.content);
+        View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.customview,
+                viewGroup, false);
+        builder.setView(dialogView);
+        lottieAnimationView = dialogView.findViewById(R.id.animationView);
+        btnOK = dialogView.findViewById(R.id.buttonOk);
+        headingTxt = dialogView.findViewById(R.id.headingtxt);
+        msgTxt = dialogView.findViewById(R.id.msgtxt);
+
+        lottieAnimationView.setAnimation(R.raw.error);
+        msgTxt.setText(msg);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        btnOK.setOnClickListener(view1 -> alertDialog.dismiss());
     }
 
     private void pickImage() {
@@ -342,8 +381,6 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
         jsonParams.put("percentage", percentage);
         jsonParams.put("supplierName", supplierName);
 
-        Log.e("JSONPARAMS2", jsonParams.toString());
-
         getClient().post(Constants.KAMS_VISIT_DETAIL, jsonParams, new AsyncHttpResponseHandler() {
 
             @Override
@@ -354,92 +391,33 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                String json = new String(responseBody);
-                Log.e("RESPONSE", "onSuccess: " + json);
                 showNow.scheduleDismiss();
-                showNow.desplayPositiveToast(FormsActivity.this, "Data submitted");
+                showNow.displayPositiveToast("Data submitted");
 
-                form2.setVisibility(View.GONE);
-                form3.setVisibility(View.VISIBLE);
+                btn_next_Screen.setEnabled(true);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String json = new String(responseBody);
-                Log.e("REPONSE2", "onSuccess: " + json);
-                showNow.desplayErrorToast(FormsActivity.this, json);
+                showNow.displayErrorToast("Connection failed! Network Error");
                 showNow.scheduleDismiss();
-
-                /*if(callBack!=null){
-
-                    callBack.responseCallback(false,"Status Code:"+statusCode+" Uknown Error Occured","");
-                }*/
             }
 
             @Override
             public void onCancel() {
                 super.onCancel();
-                //progressBar.setVisibility(View.GONE);
                 showNow.scheduleDismiss();
-
-                /*if(callBack!=null){
-
-                    callBack.responseCallback(false,"Request Cancelled","");
-                }*/
             }
         });
-    }
-
-    private void statusCheck() {
-        final LocationManager manager = (LocationManager) getSystemService(
-                Context.LOCATION_SERVICE);
-
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            buildAlertMessageNoGps();
-
-        }
-    }
-
-    private void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(
-                "Your GPS seems to be disabled, do you want to enable it?")
-                .setCancelable(false).setPositiveButton("Yes",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
-                                        final int id) {
-                        startActivity(new Intent(
-                                android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog,
-                                        final int id) {
-                        dialog.cancel();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    private void grantLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
-        }
     }
 
     private AsyncHttpClient getClient() {
         if (client == null) {
             client = new AsyncHttpClient();
             client.setTimeout(46000);
-            client.setConnectTimeout(40000); // default is 10 seconds, minimum is 1 second
+            client.setConnectTimeout(40000);
             client.setResponseTimeout(40000);
         }
-
         return client;
     }
 
@@ -461,10 +439,79 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
         jsonParams.put("POCContact", poc_cont);
         jsonParams.put("remarks", remarks);
         jsonParams.put("lastMonthSaleReport", last_mon_report);
-        Log.e("JSONPARAMS", jsonParams.toString());
-
         getClient().post(Constants.KAMS_VISIT, jsonParams, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                showNow.showLoadingDialog(FormsActivity.this);
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String json = new String(responseBody);
+                showNow.scheduleDismiss();
+                try {
+                    JSONObject object = new JSONObject(json);
+                    lastVisitInsertedID = object.getString("lastVisitInsertedID");
+                    showNow.displayPositiveToast("Data submitted");
 
+                    Log.e("lastVisitInsertedID: ", lastVisitInsertedID.toString());
+
+                    //firebase analytics
+                    FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(FormsActivity.this);
+                    Bundle params = new Bundle();
+                    Date date = new Date();
+                    params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Text");
+                    params.putString("id", uid);
+                    params.putString("name", name);
+                    params.putString("date", date.toString());
+                    mFirebaseAnalytics.logEvent("Report_First", params);
+
+                    Log.e("FIREBASE: ",params.toString());
+
+                    form1.setVisibility(View.GONE);
+                    form2.setVisibility(View.VISIBLE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    showNow.displayErrorToast(e.getMessage());
+                    showNow.scheduleDismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                showNow.displayErrorToast("Connection failed! Network Error");
+                showNow.scheduleDismiss();
+            }
+
+            @Override
+            public void onCancel() {
+                super.onCancel();
+                showNow.scheduleDismiss();
+            }
+        });
+    }
+
+    private void callApiForm3() {
+        File[] files = new File[filesList.size()];
+        if(files.length==0){
+            showNow.displayErrorToast("Please select at least one file");
+            return;
+        }
+        for (int i = 0; i < filesList.size(); i++) {
+            files[i] = filesList.get(i);
+        }
+        RequestParams jsonParams = new RequestParams();
+        jsonParams.put("_token", token);
+        jsonParams.put("kams_visit_id", lastVisitInsertedID);
+        try {
+            jsonParams.put("document", files);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Log.e("IMAGE_DATA: ",jsonParams.toString());
+
+        getClient().post(Constants.KAMS_VISIT_DOC, jsonParams, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 super.onStart();
@@ -473,118 +520,35 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                String json = new String(responseBody);
-                Log.e("RESPONSE", "onSuccess: " + json);
                 showNow.scheduleDismiss();
+                showNow.displayPositiveToast("Data submitted");
 
-                try {
-                    JSONObject object = new JSONObject(json);
-                    lastVisitInsertedID = object.getString("lastVisitInsertedID");
+                FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(FormsActivity.this);
+                Bundle params = new Bundle();
+                Date date = new Date();
+                params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Text");
+                params.putString("id", uid);
+                params.putString("name", name);
+                params.putString("date", date.toString());
+                mFirebaseAnalytics.logEvent("Report_Submit", params);
 
-                    Log.e("lastVisitInsertedID", lastVisitInsertedID);
-                    showNow.desplayPositiveToast(FormsActivity.this, "Data submitted");
-
-                    form1.setVisibility(View.GONE);
-                    form2.setVisibility(View.VISIBLE);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.e("RESPONSEERROR", e.getMessage());
-                    showNow.desplayErrorToast(FormsActivity.this, e.getMessage());
-                    //progressBar.setVisibility(View.GONE);
-                    showNow.scheduleDismiss();
-
-                }
-
+                Toast.makeText(FormsActivity.this, "Data Submitted!!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(FormsActivity.this, VisitUser.class));
+                finish();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String json = new String(responseBody);
-                Log.e("REPONSE2", "onSuccess: " + json);
-                showNow.desplayErrorToast(FormsActivity.this, json);
+                showNow.displayErrorToast("Connection failed! Network Error");
                 showNow.scheduleDismiss();
-
-                /*if(callBack!=null){
-
-                    callBack.responseCallback(false,"Status Code:"+statusCode+" Uknown Error Occured","");
-                }*/
             }
 
             @Override
             public void onCancel() {
                 super.onCancel();
-                //progressBar.setVisibility(View.GONE);
                 showNow.scheduleDismiss();
-
-                /*if(callBack!=null){
-
-                    callBack.responseCallback(false,"Request Cancelled","");
-                }*/
             }
         });
-    }
-
-    private void callApiForm3() {
-
-        File[] files = new File[filesList.size()];
-        for (int i = 0; i < filesList.size(); i++) {
-            files[i] = filesList.get(i);
-            Log.d("see files", files[i].toString());
-
-        }
-            RequestParams jsonParams = new RequestParams();
-            jsonParams.put("_token", token);
-            jsonParams.put("kams_visit_id", lastVisitInsertedID);
-        try {
-            jsonParams.put("document[]", files);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        Log.e("JSONPARAMS3", jsonParams.toString());
-            //Log.e("SD",lastVisitInsertedID);
-
-        //jsonParams.setForceMultipartEntityContentType(true);
-
-        getClient().post(Constants.KAMS_VISIT_DOC, jsonParams, new AsyncHttpResponseHandler() {
-
-                @Override
-                public void onStart() {
-                    super.onStart();
-                    showNow.showLoadingDialog(FormsActivity.this);
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                    String json = new String(responseBody);
-                    Log.e("RES", "onSuccess: " + json);
-                    showNow.scheduleDismiss();
-                    showNow.desplayPositiveToast(FormsActivity.this,"Data submitted");
-
-                    Toast.makeText(FormsActivity.this, "SUCCESS", Toast.LENGTH_SHORT).show();
-
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    String json = new String(responseBody);
-                    Log.e("REPONSEErrorr", "onSuccess: " + json);
-                    showNow.desplayErrorToast(FormsActivity.this, json);
-                    showNow.scheduleDismiss();
-                    Toast.makeText(FormsActivity.this, "OPSS"+error, Toast.LENGTH_SHORT).show();
-
-
-                }
-
-                @Override
-                public void onCancel() {
-                    super.onCancel();
-                    //progressBar.setVisibility(View.GONE);
-                    showNow.scheduleDismiss();
-                }
-            });
     }
 
     private void initViews() {
@@ -597,10 +561,11 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
         input_owner_name = findViewById(R.id.input_owner_name);
         input_owner_contact = findViewById(R.id.input_owner_contact);
         input_owner_email = findViewById(R.id.input_owner_email);
-        input_pocname = findViewById(R.id.input_pocname);
-        input_poccontact = findViewById(R.id.input_poccontact);
+        input_poc_name = findViewById(R.id.input_pocname);
+        input_poc_contact = findViewById(R.id.input_poccontact);
         input_remarks = findViewById(R.id.input_remarks);
         input_last_mon_sale_report = findViewById(R.id.input_last_mon_sale_report);
+        btn_next_Screen = findViewById(R.id.btn_next_Screen);
         btn_submit = findViewById(R.id.btn_submit);
         showNow = new ShowNow(this);
 
@@ -614,134 +579,93 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
         btn_submit_two = findViewById(R.id.btn_submit_two);
         getBtn_submit_three = findViewById(R.id.btn_submit_three);
         upload_img = findViewById(R.id.upload_img);
+
+        btnLogout = findViewById(R.id.btnlogout);
+
+        input_long = findViewById(R.id.input_long);
+        input_lat = findViewById(R.id.input_lat);
     }
+    //hhh
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        // Setting Current Longitude
-        latitude = String.valueOf(location.getLatitude());
-        longitude = String.valueOf(location.getLongitude());
-
-    }
-
-
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case GALLERY_REQUEST:
-                    /*if (data.getData() != null){
-                        uri = data.getData();
-                        try {
-                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                            if (bitmap != null){
-                                upload_img.setText("Image Picked!");
-                            }else {
-                                upload_img.setText("Attach image (if any)");
-                            }
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG,75,byteArrayOutputStream);
-                            byte[] imageInByte = byteArrayOutputStream.toByteArray();
-                            filePath = Base64.encodeToString(imageInByte, Base64.DEFAULT);
-                            //Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }*/
-                    if (data.getClipData() != null) {
+            if (requestCode == GALLERY_REQUEST) {
+                if (Objects.requireNonNull(data).getClipData() != null) {
 
-                        int count = data.getClipData().getItemCount();
-                        for (int i = 0; i < count; i++) {
-                            String imgPath = null;
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                                imgPath = fileUtils.getPath(FormsActivity.this, data.getClipData().getItemAt(i).getUri());
-                            }
-                            Log.d("multi","here"+imgPath);
-
-
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
+                        String imgPath;
+                        imgPath = FileUtils.getPath(FormsActivity.this, data.getClipData().getItemAt(i).getUri());
+                        if (imgPath != null) {
                             filesList.add(new File(imgPath));
-                            upload_img.setText("Image Picked!");
-
-
                         }
-
-                    }
-                    else if (data.getData() != null) {
-                        Uri imagePath = data.getData();
-                        Log.d("single","here"+imagePath);
-
-
-                        try {
-                            String imgPath = null;
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                                imgPath = fileUtils.getPath(FormsActivity.this, imagePath);
-                            }
-                            Log.e("FILES",imgPath);
-                            filesList.add(new File(imgPath));
-                            Log.d("size of",filesList.size()+"");
-
-
-
-
-
-                        } catch (Exception e) {
-                            Log.i("TAG", "Some exception " + e);
-                        }
-
+                        upload_img.setText("Image Picked!");
                     }
 
+                } else if (data.getData() != null) {
+                    Uri imagePath = data.getData();
+                    try {
+                        String imgPath;
+                        imgPath = FileUtils.getPath(FormsActivity.this, imagePath);
+                        Log.e("FILES", imgPath);
+                        assert imgPath != null;
+                        filesList.add(new File(imgPath));
 
-             /*       if (data.getData() != null) {
-                        //int count = data.getClipData().getItemCount();
-                        // Get a list of picked images
-                        uri = data.getData();
-                        String imgPath = fileUtils.getPath(this, uri);
-                        filePath = imgPath;
-                        Log.e("PATH",filePath);
-                        if (filePath != null){
-                            upload_img.setText("Image Picked!");
-                        }else {
-                            upload_img.setText("Attach image (if any)");
-                        }
+                        upload_img.setText("Image Picked!");
 
-                    } else {
-                        Uri image_uri = data.getData();
-                        try {
-                            String imgPath = fileUtils.getPath(this, image_uri);
-                            Log.e("FILES", imgPath);
-                            if (imgPath != null) {
-                                filePath = imgPath;
-
-                                upload_img.setText("Image Picked!");
-
-                            } else {
-                                upload_img.setText("Attach image (if any)");
-                            }
-                        } catch (Exception e) {
-                            Log.i("TAG", "Some exception " + e);
-                        }
-                    }*/
-
-                    break;
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+        if (REQUEST_CODE_CHECK_SETTINGS == requestCode) {
+            if (Activity.RESULT_OK == resultCode) {
+                myMethod();
             }
         }
     }
-    private boolean hasStoragePermission(int requestCode) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
-                return false;
-            } else {
-                return true;
+
+    private void myMethod() {
+        Criteria criteria = new Criteria();
+        provider = locationManager.getBestProvider(criteria, false);
+        if (provider != null && !provider.equals("")) {
+            if (!provider.contains("gps")) {
+                final Intent poke = new Intent();
+                poke.setClassName("com.android.settings",
+                        "com.android.settings.widget.SettingsAppWidgetProvider");
+                poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+                poke.setData(Uri.parse("3"));
+                sendBroadcast(poke);
             }
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, this);
+
+            if (location != null)
+                onLocationChanged(location);
+            else
+                location = locationManager.getLastKnownLocation(provider);
+            if (location != null)
+                onLocationChanged(location);
+
         } else {
-            return true;
+            Toast.makeText(getBaseContext(), "No Provider Found",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -749,19 +673,20 @@ public class FormsActivity extends AppCompatActivity implements LocationListener
                 pickImage();
         }
     }
-
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
+    public void onLocationChanged(@NonNull Location location) {
+        latitude = String.valueOf(location.getLatitude());
+        longitude = String.valueOf(location.getLongitude());
+        input_lat.setText(latitude);
+        input_long.setText(longitude);
     }
-
     @Override
     public void onProviderEnabled(@NonNull String provider) {
-
     }
-
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-
+    }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 }

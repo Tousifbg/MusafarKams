@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">MusafarKams</string>
+    <string name="app_name">Mosafir Kams</string>
+    <string name="mosafir_kams">MOSAFIR KAMS</string>
+    <string name="from_date">From Date</string>
+    <string name="to_date">To Date</string>
+    <string name="find_report">find reports</string>
 
     <string-array name="Type_values">
         <item>Agent</item>
