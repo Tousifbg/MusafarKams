@@ -1,4 +1,4 @@
-package com.bangashslicetech.musafarkams;
+package com.app.kams_mosafir;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
 
                     FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(MainActivity.this);
                     Bundle params = new Bundle();
-
                     Date date = new Date();
 
                     params.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Text");
@@ -132,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     mFirebaseAnalytics.logEvent("login_user", params);
 
                     goToNextScreen();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     showNow.displayErrorToast("Invalid data found");

@@ -1,4 +1,4 @@
-package com.bangashslicetech.musafarkams;
+package com.app.kams_mosafir;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;

@@ -1,4 +1,4 @@
-package com.bangashslicetech.musafarkams;
+package com.app.kams_mosafir;
 
 import android.content.ContentUris;
 import android.content.Context;

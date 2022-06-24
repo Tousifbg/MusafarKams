@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Android Projects/KAMS/MUSAFAR/app/src/main/res/layout/activity_forms.xml" value="0.176" />
+        <entry key="..\:/Android Projects/KAMS/MUSAFAR/app/src/main/res/layout/activity_forms.xml" value="0.2" />
+        <entry key="..\:/Android Projects/KAMS/MUSAFAR/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Android Projects/KAMS/MUSAFAR/app/src/main/res/layout/activity_report.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android Projects/KAMS/MUSAFAR/app/src/main/res/layout/activity_visit_user.xml" value="0.25416666666666665" />
         <entry key="..\:/KAMS/MUSAFAR/app/src/main/res/drawable/edittext_shape.xml" value="0.2703125" />
         <entry key="..\:/KAMS/MUSAFAR/app/src/main/res/drawable/toolbar_shape.xml" value="0.2703125" />
         <entry key="..\:/KAMS/MUSAFAR/app/src/main/res/layout/activity_forms.xml" value="0.25416666666666665" />
@@ -14,7 +16,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

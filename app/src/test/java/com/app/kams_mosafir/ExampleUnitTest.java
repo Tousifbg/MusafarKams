@@ -1,4 +1,4 @@
-package com.bangashslicetech.musafarkams;
+package com.app.kams_mosafir;
 
 import org.junit.Test;
 

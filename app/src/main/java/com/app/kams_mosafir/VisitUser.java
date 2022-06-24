@@ -1,4 +1,4 @@
-package com.bangashslicetech.musafarkams;
+package com.app.kams_mosafir;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,8 +11,6 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-
-import java.util.Date;
 
 public class VisitUser extends AppCompatActivity {
 

@@ -8,7 +8,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "com.bangashslicetech.musafarkams"
+        applicationId "com.app.kams_mosafir"
         minSdkVersion 19
         //noinspection OldTargetApi
         targetSdkVersion 31
